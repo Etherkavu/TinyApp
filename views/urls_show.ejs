@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+
+  <ul>
+    <p>This is the index file.</p>
+
+        <li><%= shortURL %></li>
+        <% for (var key in urls) { %>
+        <% if (key === shortURL){ %>
+        <%= urls[key] %></li>
+      <% } %>
+    <% }; %>
+  </ul>
+
+</body>
+</html>
