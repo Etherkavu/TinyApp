@@ -5,6 +5,16 @@ const bodyParser = require("body-parser");
 
 app.set("view engine", "ejs")
 
+
+function generateRandomString() {
+  var result = '';
+  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (var i = 0; i < 6; i++){
+      result += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return result;
+}
+
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
