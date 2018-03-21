@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <% include ../partials/_header %>
+  <%- include partials/_header.ejs %>
 </head>
 <body>
 
@@ -9,7 +9,10 @@
     <p>This is the index file.</p>
 
     <% for (var key in urls) { %>
-        <li><%= key %> : <%= urls[key] %></li>
+        <form method="POST" action="/urls/<%= key %>/delete">
+        <li><%= key %> : <%= urls[key] %>
+        <input type="submit" value="Delete"></li>
+        </form>
     <% }; %>
   </ul>
 

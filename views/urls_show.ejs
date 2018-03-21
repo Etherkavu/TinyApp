@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <% include ../partials/_header %>
+  <%- include partials/_header.ejs %>
 </head>
 <body>
 
@@ -9,6 +9,7 @@
     <p>This is the index file.</p>
 
         <li><%= shortURL %></li>
+
         <% for (var key in urls) { %>
         <% if (key === shortURL){ %>
         <%= urls[key] %></li>
