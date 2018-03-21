@@ -12,7 +12,11 @@
 
         <% for (var key in urls) { %>
         <% if (key === shortURL){ %>
-        <%= urls[key] %></li>
+        <form method="POST" action="/urls/<%= key %>">
+        <input id="longURL" type="text" name="longURL" placeholder="<%= urls[key] %>" style="width: 300px">
+        <input type="submit" value="Update"></li>
+        </form>
+
       <% } %>
     <% }; %>
   </ul>

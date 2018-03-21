@@ -9,10 +9,15 @@
     <p>This is the index file.</p>
 
     <% for (var key in urls) { %>
-        <form method="POST" action="/urls/<%= key %>/delete">
-        <li><%= key %> : <%= urls[key] %>
-        <input type="submit" value="Delete"></li>
+
+<li>ShortURL: <%= key %> : <%= urls[key] %>
+            <form method="POST" action="/urls/<%= key %>/Delete">
+
+          <input type="submit" value="Delete">
         </form>
+        <form method="POST" action="/urls/<%= key %>/Edit">
+            <input type="submit" value="Edit"></form>
+          </li>
     <% }; %>
   </ul>
 

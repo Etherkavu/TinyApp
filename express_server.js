@@ -52,9 +52,13 @@ app.post("/urls", (req, res) => {
   res.send(req.body.longURL + " Shortend too: " + newShort);         // Respond with 'Ok' (we will replace this)
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.post("/urls/:id/Delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("http://localhost:8080/urls");
+});
+
+app.post("/urls/:id/Edit", (req, res) => {
+  res.redirect("http://localhost:8080/urls/" + req.params.id);
 });
 
 
@@ -65,6 +69,13 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, urls: urlDatabase};
   res.render("urls_show", templateVars);
+});
+
+app.post("/urls/:id", (req, res) => {
+  if(req.body.longURL != ''){
+    urlDatabase[req.params.id] = req.body.longURL;
+  }
+  res.redirect("http://localhost:8080/urls");
 });
 
 app.listen(PORT, () => {
