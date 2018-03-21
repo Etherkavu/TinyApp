@@ -1,9 +1,11 @@
 var express = require("express");
+var cookieParser = require('cookie-parser');
 var app = express();
+app.use(cookieParser());
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 
-app.set("view engine", "ejs")
+app.set("view engine", "ejs");
 
 
 function generateRandomString() {
@@ -50,6 +52,11 @@ app.post("/urls", (req, res) => {
   var newShort = generateRandomString();
   urlDatabase[newShort] = req.body.longURL;
   res.send(req.body.longURL + " Shortend too: " + newShort);         // Respond with 'Ok' (we will replace this)
+});
+
+app.post("/login", (req, res) => {
+  res.cookie('user', req.body.username);
+  res.redirect("http://localhost:8080/urls");
 });
 
 app.post("/urls/:id/Delete", (req, res) => {
