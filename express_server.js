@@ -21,6 +21,14 @@ var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+var users = {
+  "userID": {
+     id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  }
+
+};
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -55,6 +63,23 @@ app.post("/urls", (req, res) => {
   res.send(req.body.longURL + " Shortend too: " + newShort);         // Respond with 'Ok' (we will replace this)
 });
 
+app.get("/register", (req, res) => {
+  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  res.render("urls_reg", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  var newUser = 'user'+ generateRandomString();
+  users[newUser] = req.body.longURL = {
+    id: newUser,
+    email: req.body.email,
+    password: req.body.email
+  }
+  res.cookie('user_id', newUser);
+  res.redirect("http://localhost:8080/urls");
+});
+
+
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect("http://localhost:8080/urls");
@@ -86,7 +111,7 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   if(req.body.longURL != ''){
-    urlDatabase[req.params.id] = req.body.longURL;
+    users[req.params.id] = req.body.longURL;
   }
   res.redirect("http://localhost:8080/urls");
 });

@@ -10,14 +10,14 @@
 
     <% for (var key in urls) { %>
 
-<li>ShortURL: <%= key %> : <%= urls[key] %>
-            <form method="POST" action="/urls/<%= key %>/Delete">
-
+      <li>ShortURL: <%= key %> : <a href=urls[keys]><%= urls[key] %></a>
+        <form method="POST" action="/urls/<%= key %>/Delete">
           <button type="submit">Delete</button>
-        </form>
+
         <form method="POST" action="/urls/<%= key %>/Edit">
-            <button type="submit">Edit</button></form>
-          </li>
+          <button type="submit">Edit</button>
+        </form>
+      </li>
     <% }; %>
   </ul>
 
