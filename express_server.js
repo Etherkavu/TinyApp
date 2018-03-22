@@ -10,16 +10,32 @@ app.set("view engine", "ejs");
 
 function generateRandomString() {
   var result = '';
-  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var chars = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     for (var i = 0; i < 6; i++){
       result += chars[Math.floor(Math.random() * chars.length)];
     }
     return result;
 }
+function emailCheck(emailaddress){
+  for(var id in users){
+    if(users[id].email == emailaddress){
+      return id;
+    }
+  }
+  return false;
+}
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+var users = {
+  "userID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  }
+
 };
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -39,12 +55,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"]};
+  let templateVars = { user: users[req.cookies["user_id"]]};
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = { user: users[req.cookies["user_id"]], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
@@ -55,13 +71,47 @@ app.post("/urls", (req, res) => {
   res.send(req.body.longURL + " Shortend too: " + newShort);         // Respond with 'Ok' (we will replace this)
 });
 
-app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+app.get("/register", (req, res) => {
+  let templateVars = { user: users[req.cookies["user_id"]], urls: urlDatabase };
+  res.render("urls_reg", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  var newUser = 'user'+ generateRandomString();
+  if(!req.body.password || !req.body.email){
+    res.status(400).send('Bad Request');
+  } if (emailCheck(req.body.email)){
+    res.status(400).send('Bad Request');;
+  } else {
+  users[newUser] = req.body.longURL = {
+    id: newUser,
+    email: req.body.email,
+    password: req.body.password
+  }
+  res.cookie('user_id', newUser);
   res.redirect("http://localhost:8080/urls");
+  }
+});
+
+app.get("/login", (req, res) => {
+
+  res.render("urls_login");
+});
+
+app.post("/login", (req, res) => {
+  if (emailCheck(req.body.email)){
+    let id = emailCheck(req.body.email);
+    if (req.body.password === users[id].password){
+    res.cookie('user_id', id);
+    res.redirect("http://localhost:8080/urls/urls_login");
+    }
+  }
+  res.status(403).send('Forbidden');;
+
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect("http://localhost:8080/urls");
 });
 
@@ -80,13 +130,13 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { username: req.cookies["username"], shortURL: req.params.id, urls: urlDatabase};
+    let templateVars = { user: users[req.cookies["user_id"]], shortURL: req.params.id, urls: urlDatabase};
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
   if(req.body.longURL != ''){
-    urlDatabase[req.params.id] = req.body.longURL;
+    users[req.params.id] = req.body.longURL;
   }
   res.redirect("http://localhost:8080/urls");
 });

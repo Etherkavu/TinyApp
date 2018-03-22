@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+      <title>TinyApp</title>
+  </head>
+  <body style="font-size:20px; padding:50px;">
+<% if (user){ %>
+     <li>User Email: <%= user.email %>
+      <form action="/logout" method="POST" >
+        <button type="submit"> Logout</button>
+  </form></li>
+      <% } else {%>
+        <li>Register new account</li>
+        <form action="/register" method="POST">
+          <label for="longURL">Email:</label>
+          <input id="email" type="email" name="email" placeholder=" " style="width: 300px">
+          <label for="longURL">Password</label>
+          <input id="password" type="password" name="password" placeholder=" " style="width: 300px">
+          <input type="submit" value="Submit">
+        </form>
+      <% } %>
+</body>
+</html>

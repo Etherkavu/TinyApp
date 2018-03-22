@@ -4,15 +4,16 @@
   }
 </style>
   <title>TinyApp</title>
-  <% if (username){ %>
-     <li>Username: <%= username %>
+  <% if (user){ %>
+     <li>User: <%= user.email %>
       <form action="/logout" method="POST" >
         <button type="submit"> Logout</button>
   </form></li>
       <% } else {%>
-  <form action="/login" method="POST" >
-      <label for="username">Username:</label>
-      <input id="username" type="text" name="username" placeholder=" " style="width: 300px">
-      <input type="submit" value="Submit">
+        <form action="/register" method="GET" >
+          <input type="submit" value="Register">
+        </form>
+        <form action="/login" method="GET" >
+          <input type="submit" value="Login">
+        </form>
       <% } %>
-  </form>
