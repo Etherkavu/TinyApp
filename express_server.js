@@ -16,6 +16,14 @@ function generateRandomString() {
     }
     return result;
 }
+function emailCheck(emailaddress){
+  for(var id in users){
+    if(users[id].email == emailaddress){
+      return true;
+    }
+  }
+  return false;
+}
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -23,7 +31,7 @@ var urlDatabase = {
 };
 var users = {
   "userID": {
-     id: "userRandomID",
+    id: "userRandomID",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   }
@@ -47,12 +55,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"]};
+  let templateVars = { user: users[req.cookies["user_id"]]};
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = { user: users[req.cookies["user_id"]], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
@@ -64,19 +72,25 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  let templateVars = { user: users[req.cookies["user_id"]], urls: urlDatabase };
   res.render("urls_reg", templateVars);
 });
 
 app.post("/register", (req, res) => {
   var newUser = 'user'+ generateRandomString();
+  if(!req.body.password || !req.body.email){
+    res.status(400).send('Bad Request');
+  } if (emailCheck(req.body.email)){
+    res.status(400).send('Bad Request');;
+  } else {
   users[newUser] = req.body.longURL = {
     id: newUser,
     email: req.body.email,
-    password: req.body.email
+    password: req.body.password
   }
   res.cookie('user_id', newUser);
   res.redirect("http://localhost:8080/urls");
+  }
 });
 
 
@@ -86,7 +100,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect("http://localhost:8080/urls");
 });
 
@@ -105,7 +119,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { username: req.cookies["username"], shortURL: req.params.id, urls: urlDatabase};
+    let templateVars = { user: users[req.cookies["user_id"]], shortURL: req.params.id, urls: urlDatabase};
   res.render("urls_show", templateVars);
 });
 

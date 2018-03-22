@@ -4,8 +4,8 @@
   <head>
       <title>TinyApp</title>
   </head>
-<% if (username){ %>
-     <li>Username: <%= username %>
+<% if (user){ %>
+     <li>Username: <%= user.email %>
       <form action="/logout" method="POST" >
         <button type="submit"> Logout</button>
   </form></li>
