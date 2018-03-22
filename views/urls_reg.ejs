@@ -4,6 +4,7 @@
   <head>
       <title>TinyApp</title>
   </head>
+  <body style="font-size:20px; padding:50px;">
 <% if (user){ %>
      <li>Username: <%= user.email %>
       <form action="/logout" method="POST" >
@@ -19,3 +20,5 @@
           <input type="submit" value="Submit">
         </form>
       <% } %>
+</body>
+</html>

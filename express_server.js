@@ -10,7 +10,7 @@ app.set("view engine", "ejs");
 
 function generateRandomString() {
   var result = '';
-  var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var chars = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     for (var i = 0; i < 6; i++){
       result += chars[Math.floor(Math.random() * chars.length)];
     }
@@ -19,7 +19,7 @@ function generateRandomString() {
 function emailCheck(emailaddress){
   for(var id in users){
     if(users[id].email == emailaddress){
-      return true;
+      return id;
     }
   }
   return false;
@@ -93,10 +93,21 @@ app.post("/register", (req, res) => {
   }
 });
 
+app.get("/login", (req, res) => {
+
+  res.render("urls_login");
+});
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect("http://localhost:8080/urls");
+  if (emailCheck(req.body.email)){
+    let id = emailCheck(req.body.email);
+    if (req.body.password === users[id].password){
+    res.cookie('user_id', id);
+    res.redirect("http://localhost:8080/urls/urls_login");
+    }
+  }
+  res.status(403).send('Forbidden');;
+
 });
 
 app.post("/logout", (req, res) => {
