@@ -27,4 +27,4 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Notes:
 
 - Can handle web addresses that are missing "http://"
-- private access to managing sohrtend URLs using secure login system
+- private access to managing shortend URLs using secure login system
