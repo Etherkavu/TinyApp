@@ -10,7 +10,7 @@
 
     <% for (var key in urls) { %>
 
-      <li>ShortURL: <%= key %> : <a href=urls[keys]><%= urls[key] %></a>
+      <li>ShortURL: <%= key %> : <a href=urls[keys]><%= urls[key].url %></a>
         <form method="POST" action="/urls/<%= key %>/Delete">
           <button type="submit">Delete</button>
 

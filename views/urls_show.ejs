@@ -6,14 +6,13 @@
 <body>
 
   <ul>
-    <p>This is the index file.</p>
 
         <li><%= shortURL %></li>
 
         <% for (var key in urls) { %>
         <% if (key === shortURL){ %>
         <form method="POST" action="/urls/<%= key %>">
-        <input id="longURL" type="text" name="longURL" placeholder="<%= urls[key] %>" style="width: 300px">
+        <input id="longURL" type="text" name="longURL" placeholder="<%= urls[key].url %>" style="width: 300px">
         <input type="submit" value="Update"></li>
         </form>
 
