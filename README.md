@@ -18,11 +18,11 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Product in action
 
-!["Screenshot of Registration"]https://github.com/Etherkavu/TinyApp/blob/master/docs/Registration_page.png?raw=true
+!["Screenshot of Registration"](https://github.com/Etherkavu/TinyApp/blob/master/docs/Registration_page.png?raw=true)
 
-!["Screenshot of URL prompt"]https://github.com/Etherkavu/TinyApp/blob/master/docs/URL_Prompt.png?raw=true
+!["Screenshot of URL prompt"](https://github.com/Etherkavu/TinyApp/blob/master/docs/URL_Prompt.png?raw=true)
 
-!["Screenshot of URL index"]https://github.com/Etherkavu/TinyApp/blob/master/docs/URL_Index.png?raw=true
+!["Screenshot of URL index"](https://github.com/Etherkavu/TinyApp/blob/master/docs/URL_Index.png?raw=true)
 
 ## Notes:
 
