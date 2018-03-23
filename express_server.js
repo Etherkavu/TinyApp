@@ -1,14 +1,18 @@
+//Dependency setup
 var express = require("express");
-var cookieParser = require('cookie-parser');
 var app = express();
-app.use(cookieParser());
+var cookieSession = require('cookie-session')
+var express = require('express')
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 
 app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieSession({ secret: 'wehadababyitsaboy' }));
 
-
+//function generateRandomString
+//Genetates random 6 length string, used for User ID creation and URL shortning
 function generateRandomString() {
   var result = '';
   var chars = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -16,6 +20,11 @@ function generateRandomString() {
       result += chars[Math.floor(Math.random() * chars.length)];
     }
     return result;
+
+//function emailCheck
+//compares given arg with all users until it finds a match or runs out of tests.
+//Returns Id if present, returns false if not match found, enables both ID
+//retrival and boolean checks.
 }
 function emailCheck(emailaddress){
   for(var id in users){
@@ -26,6 +35,7 @@ function emailCheck(emailaddress){
   return false;
 }
 
+//pulls only the URLs belonging only to the user from the main database
 function urlsForUser(id){
   var newDatabase = { };
   for(var short in urlDatabase){
@@ -36,6 +46,7 @@ function urlsForUser(id){
   return newDatabase;
 }
 
+//core URL database
 var urlDatabase = {
   "b2xVn2": {
     url: "www.lighthouselabs.ca",
@@ -43,6 +54,7 @@ var urlDatabase = {
   }
 };
 
+//core user database
 var users = {
   "userID": {
     id: "userRandomID",
@@ -50,13 +62,14 @@ var users = {
     password: "purple-monkey-dinosaur"
   }
 };
-
-app.use(bodyParser.urlencoded({extended: true}));
-
+//root
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+//takes in the short url and finds it within the database
+//checks for http:// and adds it not present
+//redirects to original URL, plus http:// if user did not add during entry
 app.get("/u/:shortURL", (req, res) => {
   var longURL = '';
   for (var key in urlDatabase) {
@@ -74,33 +87,48 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+//creating new shortend URL:
+//checks if user is logged in
+//  if not: redirects to registration page
+//  if it: sends to creation page.
 app.get("/urls/new", (req, res) => {
-  if (!users[req.cookies["user_id"]]){
+  if (!users[req.session.user_id]){
     res.redirect("http://localhost:8080/register");
   }
-  let templateVars = { user: users[req.cookies["user_id"]]};
+  let templateVars = { user: users[req.session.user_id]};
   res.render("urls_new", templateVars);
 });
 
+//get url index page
+//creates custom database of users specific URLs, will be empty if not logged in
 app.get("/urls", (req, res) => {
-  let userbase = urlsForUser(req.cookies["user_id"]);
-  let templateVars = { user: users[req.cookies["user_id"]], urls: userbase };
+  let userbase = urlsForUser(req.session.user_id);
+  let templateVars = { user: users[req.session.user_id], urls: userbase };
   res.render("urls_index", templateVars);
 });
 
+//Post to add shortend URL
+//stores long url in database, generates a new shortend url with random key
+//sends to index after creation
 app.post("/urls", (req, res) => {
-  // console.log(req.body.longURL);  // debug statement to see POST parameters
   var newShort = generateRandomString();
-  urlDatabase[newShort] = { url: req.body.longURL, user: req.cookies["user_id"]};
-
-  res.redirect("http://localhost:8080/urls");       // Respond with 'Ok' (we will replace this)
+  urlDatabase[newShort] = { url: req.body.longURL, user: req.session.user_id};
+  res.redirect("http://localhost:8080/urls");
 });
 
+//Get registration page
 app.get("/register", (req, res) => {
-  let templateVars = { user: users[req.cookies["user_id"]], urls: urlDatabase };
+  let templateVars = { user: users[req.session.user_id], urls: urlDatabase };
   res.render("urls_reg", templateVars);
 });
 
+//Creates new user in user database
+//checks to make sure user has entered both an email and password
+//  throws 400 if incorrect
+//checks to make sure user has entered a non existing email
+//  throws 400 if incorrect
+//if all pass, hashes password and creates new user objet in user database
+//sets cookie to user for identification and redirects to index
 app.post("/register", (req, res) => {
   var newUser = 'user'+ generateRandomString();
   if(!req.body.password || !req.body.email){
@@ -114,37 +142,47 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: hashed
   }
-  res.cookie('user_id', newUser);
+  req.session.user_id = newUser;
   res.redirect("http://localhost:8080/urls");
   }
 });
 
+//Get login page
 app.get("/login", (req, res) => {
-
   res.render("urls_login");
 });
 
+//Send Login request
+//Checks user credentials
+//  if good, sends to index
+//  if bad, sends 403 error
 app.post("/login", (req, res) => {
-    let id = emailCheck("here");
   if (emailCheck(req.body.email)){
-    let id = emailCheck(req.body.email);
-    console.log(id);
-    if (bcrypt.compareSync(req.body.password, users[id].password)){
-      res.cookie('user_id', id);
+    var id = emailCheck(req.body.email);
+    var check = bcrypt.compareSync(req.body.password, users[id].password);
+    if (check){
+      req.session.user_id = id;
       res.redirect("http://localhost:8080/urls");
     }
-  }
+  }else{
   res.status(403).send('Forbidden');
-
+  }
 });
 
+//Post logout
+//Clears session cookie, preventing user specific information and entry
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   res.redirect("http://localhost:8080/urls");
 });
 
+//Post Delete
+//Used for deletion of short URLs from the database
+//Checks that user is owner of short URL before deletion
+//  send 403 error if not owner
+//  deletes if owner matches cookie information
 app.post("/urls/:id/Delete", (req, res) => {
-  if (urlDatabase[req.params.id].user === req.cookies["user_id"]){
+  if (urlDatabase[req.params.id].user === req.session.user_id){
     delete urlDatabase[req.params.id];
     res.redirect("http://localhost:8080/urls");
   }
@@ -153,8 +191,13 @@ app.post("/urls/:id/Delete", (req, res) => {
   }
 });
 
+//Post Edit
+//Used for editing short URLs in the database
+//Checks that user is owner of short URL before editting
+//  send 403 error if not owner
+//  Edits long URL to new value inputted by the user
 app.post("/urls/:id/Edit", (req, res) => {
-  if (urlDatabase[req.params.id].user === req.cookies["user_id"]){
+  if (urlDatabase[req.params.id].user === req.session.user_id){
     res.redirect("http://localhost:8080/urls/" + req.params.id);
   }
   else{
@@ -162,21 +205,26 @@ app.post("/urls/:id/Edit", (req, res) => {
   }
 });
 
-
+//view database
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+//Get urls/:id
+//Based on ID, will check that user is owner or the link, then bring up the
+//status page of the URL.
+//  info on page: short URL key, original address, delete and edit options
 app.get("/urls/:id", (req, res) => {
-  console.log("HERE");
-  if (urlDatabase[req.params.id].user === req.cookies["user_id"]){
-    let templateVars = { user: users[req.cookies["user_id"]], shortURL: req.params.id, urls: urlDatabase};
+  if (urlDatabase[req.params.id].user === req.session.user_id){
+    let templateVars = { user: users[req.session.user_id], shortURL: req.params.id, urls: urlDatabase};
     res.render("urls_show", templateVars);
   } else{
     res.redirect("http://localhost:8080/register");
   }
 });
 
+//Post /urls/:id
+//used to update original URLS
 app.post("/urls/:id", (req, res) => {
   if(req.body.longURL != ''){
     users[req.params.id] = req.body.longURL;
@@ -184,6 +232,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("http://localhost:8080/urls");
 });
 
+//server start for terminal
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
