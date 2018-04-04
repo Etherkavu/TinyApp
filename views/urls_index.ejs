@@ -8,12 +8,16 @@
   <ul>
     <p>This is the index file.</p>
 
+    <form action="/urls/new" method="GET" >
+        <button type="submit"> New</button>
+  </form>
+
     <% for (var key in urls) { %>
 
       <li>ShortURL: <%= key %> : <a href=urls[keys]><%= urls[key].url %></a>
         <form method="POST" action="/urls/<%= key %>/Delete">
           <button type="submit">Delete</button>
-
+        </form>
         <form method="POST" action="/urls/<%= key %>/Edit">
           <button type="submit">Edit</button>
         </form>
