@@ -64,7 +64,7 @@ var users = {
 };
 //root
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  res.redirect("http://localhost:8080/urls");
 });
 
 //takes in the short url and finds it within the database
@@ -94,9 +94,10 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/new", (req, res) => {
   if (!users[req.session.user_id]){
     res.redirect("http://localhost:8080/register");
-  }
+  } else {
   let templateVars = { user: users[req.session.user_id]};
   res.render("urls_new", templateVars);
+  }
 });
 
 //get url index page
@@ -198,6 +199,7 @@ app.post("/urls/:id/Delete", (req, res) => {
 //  Edits long URL to new value inputted by the user
 app.post("/urls/:id/Edit", (req, res) => {
   if (urlDatabase[req.params.id].user === req.session.user_id){
+    // urlDatabase[req.params.id].url = req.session.longURL;
     res.redirect("http://localhost:8080/urls/" + req.params.id);
   }
   else{
@@ -227,7 +229,7 @@ app.get("/urls/:id", (req, res) => {
 //used to update original URLS
 app.post("/urls/:id", (req, res) => {
   if(req.body.longURL != ''){
-    users[req.params.id] = req.body.longURL;
+    urlDatabase[req.params.id].url = req.body.longURL;
   }
   res.redirect("http://localhost:8080/urls");
 });

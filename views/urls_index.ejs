@@ -14,7 +14,7 @@
 
     <% for (var key in urls) { %>
 
-      <li>ShortURL: <%= key %> : <a href =http://<%= urls[key].url %> ><%= urls[key].url %></a>
+      <li>ShortURL: http://localhost:8080/u/<%= key %> : <a href =http://<%= urls[key].url %> ><%= urls[key].url %></a>
         <form method="POST" action="/urls/<%= key %>/Delete">
           <button type="submit">Delete</button>
         </form>

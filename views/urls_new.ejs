@@ -3,9 +3,6 @@
   <head>
     <% include partials/_header %>
   </head>
-  <% if (!user){
-  redirect("http://localhost:8080/urls")
-  }%>
   <body style="font-size:20px; padding:50px;">
     <form action="/urls" method="POST">
       <label for="longURL">Enter a URL:</label>
